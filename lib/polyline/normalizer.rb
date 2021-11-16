@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
+require 'fast-polylines'
 require_relative 'normalizer/version'
-
-module Polyline
-  module Normalizer
-  end
-end
+require_relative 'normalizer/distance'
