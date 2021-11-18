@@ -1,10 +1,13 @@
 describe Polyline::Normalizer::Distance do
-  let(:encoded) { read_fixture('pincher_creek/input.line') }
-  subject { described_class.new(reduction_factor: 5) }
-
   describe '#normalized' do
     it 'normalizes an encoded path by point distance' do
-      expect(subject.normalize(encoded)).to eq(read_fixture('pincher_creek/output.line'))
+      encoded = read_fixture('pincher_creek/input.line')
+      expect(described_class.normalize(encoded)).to eq(read_fixture('pincher_creek/output.line'))
+    end
+
+    it 'properly sets the start and finish points' do
+      described_class.normalize(read_fixture('cochrane/input.line'))
+      expect(true).to eq(false)
     end
   end
 end
