@@ -6,9 +6,7 @@ module Polyline
 
       class << self
         def normalize(input)
-          points = FastPolylines.decode(input)
-            .uniq
-            .sort { |a, b| b[0] <=> a[0] }
+          points = heuristic_sort(FastPolylines.decode(input).uniq)
           start = points.pop
           path = [start]
 
@@ -35,6 +33,17 @@ module Polyline
         end
 
         private
+
+        def heuristic_sort(points)
+          start = points.first
+          stop = points.last
+          d_lat = (stop[0] - start[0]).abs
+          d_lon = (stop[1] - start[1]).abs
+
+          return points.sort { |a, b| b[0] <=> a[0] } if d_lat > d_lon
+
+          points.sort { |a, b| b[1] <=> a[1] }
+        end
 
         # returns the "forward azimuth" or direction between two points
         # in degrees.
