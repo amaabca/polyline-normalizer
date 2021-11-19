@@ -5,44 +5,49 @@ module Polyline
       DEGREES = Math::PI / 180 # degrees from radians
 
       class << self
-        def normalize(input)
-          points = heuristic_sort(FastPolylines.decode(input).uniq)
-          start = points.pop
-          path = [start]
+        def normalize(input, threshold = 5000)
+          points = FastPolylines.decode(input).uniq
+          segments = divide(points, threshold)
+          path = join(segments)
+          FastPolylines.encode(path)
+        end
 
-          # O(n^2) - plus some overhead for removing from the center of an array
+        private
+
+        # naively sort the segments ascending by latitude (south to north)
+        def join(segments)
+          segments
+            .sort { |a, b| a.first[0] <=> b.first[0] }
+            .each_with_object([]) { |s, acc| acc.push(*s) }
+        end
+
+        def divide(points, threshold)
+          path = [points.pop]
+          segments = [path]
+
           while points.any?
             current = path.last
-            min_index = points.size - 1
+            min_index = -1
             min_distance = Float::INFINITY
 
             points.each_with_index do |point, index|
               distance = geodesic_distance(current, point)
-
               if distance < min_distance
                 min_distance = distance
                 min_index = index
               end
             end
 
-            # remove the selected point from future consideration
-            path.push(points.delete_at(min_index))
+            if min_distance > threshold
+              # new segment
+              path = [points.delete_at(min_index)]
+              segments << path
+            else
+              path.push(points.delete_at(min_index))
+            end
           end
 
-          FastPolylines.encode(path)
-        end
-
-        private
-
-        def heuristic_sort(points)
-          start = points.first
-          stop = points.last
-          d_lat = (stop[0] - start[0]).abs
-          d_lon = (stop[1] - start[1]).abs
-
-          return points.sort { |a, b| b[0] <=> a[0] } if d_lat > d_lon
-
-          points.sort { |a, b| b[1] <=> a[1] }
+          segments
         end
 
         # returns the "forward azimuth" or direction between two points
