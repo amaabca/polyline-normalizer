@@ -2,4 +2,4 @@
 
 require 'fast-polylines'
 require_relative 'normalizer/version'
-require_relative 'normalizer/distance'
+require_relative 'normalizer/road_segment'
