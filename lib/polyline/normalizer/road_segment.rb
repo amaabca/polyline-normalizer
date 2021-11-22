@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 module Polyline
   module Normalizer
     class RoadSegment
-      EARTHS_RADIUS = 6371e3   # meters
+      EARTHS_RADIUS = 6_371_000.to_f # meters
       DEGREES = Math::PI / 180 # degrees from radians
 
       attr_accessor(
@@ -22,6 +24,13 @@ module Polyline
 
       private
 
+      # Perform a basic heuristic to determine what we should sort by (either
+      # the lat or the lon coordinate).
+      #
+      # If the difference between the latitudes of the start/end point is
+      # greater than the difference of the longitudes of the start/end point,
+      # then sort by latitude (south to north). Otherwise sort by longitude
+      # (east to west).
       def sort_by_index
         start = points.first
         stop = points.last
@@ -35,7 +44,6 @@ module Polyline
         end
       end
 
-      # naively sort the segments ascending by latitude (south to north)
       def join(parts)
         sort_index = sort_by_index
         parts
@@ -77,20 +85,19 @@ module Polyline
       # returns the "forward azimuth" or direction between two points
       # in degrees.
       #
-      # note: we don't currently use this value to normalize a road segment,
-      # but we might in the future.
+      # note: we don't use this currently, but we might want to in the future
       #
       # see: https://www.movable-type.co.uk/scripts/latlong.html#bearing
       # :nocov:
       def bearing(one, two)
         y = Math.sin(two[1] - one[1]) * Math.cos(two[0])
-        x = Math.cos(one[0]) *
-            Math.sin(two[0]) -
-            Math.sin(one[0]) *
+        x = (Math.cos(one[0]) *
+            Math.sin(two[0])) -
+            (Math.sin(one[0]) *
             Math.cos(two[0]) *
-            Math.cos(two[1] - one[1])
+            Math.cos(two[1] - one[1]))
         theta = Math.atan2(y, x)
-        (theta * 180 / Math::PI + 360) % 360
+        ((theta * 180 / Math::PI) + 360) % 360
       end
       # :nocov:
 
@@ -99,10 +106,10 @@ module Polyline
         # haversine formula for great-circle distance
         delta_lat = (two[0] - one[0]) * DEGREES
         delta_lon = (two[1] - one[1]) * DEGREES
-        a = Math.sin(delta_lat / 2) ** 2 +
-            Math.cos(one[0] * DEGREES) *
+        a = (Math.sin(delta_lat / 2)**2) +
+            (Math.cos(one[0] * DEGREES) *
             Math.cos(two[0] * DEGREES) *
-            Math.sin(delta_lon / 2) ** 2
+            (Math.sin(delta_lon / 2)**2))
         c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
         c * EARTHS_RADIUS
       end

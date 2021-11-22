@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 describe Polyline::Normalizer::RoadSegment do
   subject { described_class.new(input) }
 
