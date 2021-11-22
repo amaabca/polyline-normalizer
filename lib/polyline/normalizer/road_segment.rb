@@ -76,7 +76,12 @@ module Polyline
 
       # returns the "forward azimuth" or direction between two points
       # in degrees.
+      #
+      # note: we don't currently use this value to normalize a road segment,
+      # but we might in the future.
+      #
       # see: https://www.movable-type.co.uk/scripts/latlong.html#bearing
+      # :nocov:
       def bearing(one, two)
         y = Math.sin(two[1] - one[1]) * Math.cos(two[0])
         x = Math.cos(one[0]) *
@@ -87,6 +92,7 @@ module Polyline
         theta = Math.atan2(y, x)
         (theta * 180 / Math::PI + 360) % 360
       end
+      # :nocov:
 
       # returns the geodesic distance between 2 lat/lon coordiantes in metres
       def geodesic_distance(one, two)
