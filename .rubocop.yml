@@ -3,5 +3,12 @@ AllCops:
   SuggestExtensions: false
 Gemspec/RequiredRubyVersion:
   Enabled: false
+Metrics/AbcSize:
+  Max: 30
+Metrics/MethodLength:
+  Max: 25
+Naming/FileName:
+  Exclude:
+    - 'lib/polyline-normalizer.rb'
 Style/Documentation:
   Enabled: false
