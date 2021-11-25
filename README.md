@@ -4,7 +4,7 @@ This library implements a heuristic-based approach to normalize paths encoded wi
 
 The goal of this project is to "clean up" existing polyline data to match real-world roadway segments.
 
-For example, we want to take an polyline that looks something like:
+For example, we want to take a polyline that looks something like:
 
 ![Input](https://raw.github.com/amaabca/polyline-normalizer/master/data/original.png)
 
