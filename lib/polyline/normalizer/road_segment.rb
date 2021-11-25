@@ -4,7 +4,7 @@ module Polyline
   module Normalizer
     class RoadSegment
       EARTHS_RADIUS = 6_371_000.to_f # meters
-      DEGREES = Math::PI / 180 # degrees from radians
+      DEGREES_TO_RADIANS = Math::PI / 180
 
       attr_accessor(
         :input,
@@ -82,35 +82,20 @@ module Polyline
         segments
       end
 
-      # returns the "forward azimuth" or direction between two points
-      # in degrees.
-      #
-      # note: we don't use this currently, but we might want to in the future
-      #
-      # see: https://www.movable-type.co.uk/scripts/latlong.html#bearing
-      # :nocov:
-      def bearing(one, two)
-        y = Math.sin(two[1] - one[1]) * Math.cos(two[0])
-        x = (Math.cos(one[0]) *
-            Math.sin(two[0])) -
-            (Math.sin(one[0]) *
-            Math.cos(two[0]) *
-            Math.cos(two[1] - one[1]))
-        theta = Math.atan2(y, x)
-        ((theta * 180 / Math::PI) + 360) % 360
-      end
-      # :nocov:
-
-      # returns the geodesic distance between 2 lat/lon coordiantes in metres
+      # returns the geodesic distance between 2 lat/lon coordinates in metres
+      # calculated from the haversine formula for great-circle distance
       def geodesic_distance(one, two)
-        # haversine formula for great-circle distance
-        delta_lat = (two[0] - one[0]) * DEGREES
-        delta_lon = (two[1] - one[1]) * DEGREES
+        # first make sure all of our inputs are in radians
+        delta_lat = (two[0] - one[0]) * DEGREES_TO_RADIANS
+        delta_lon = (two[1] - one[1]) * DEGREES_TO_RADIANS
+        lat_one = one[0] * DEGREES_TO_RADIANS
+        lat_two = two[0] * DEGREES_TO_RADIANS
+
+        # haversine formula
         a = (Math.sin(delta_lat / 2)**2) +
-            (Math.cos(one[0] * DEGREES) *
-            Math.cos(two[0] * DEGREES) *
-            (Math.sin(delta_lon / 2)**2))
-        c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+            ((Math.sin(delta_lon / 2)**2) *
+            Math.cos(lat_one) * Math.cos(lat_two))
+        c = 2 * Math.asin(Math.sqrt(a))
         c * EARTHS_RADIUS
       end
     end
