@@ -5,6 +5,12 @@ Gemspec/RequiredRubyVersion:
   Enabled: false
 Metrics/AbcSize:
   Max: 30
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'
+    - '*.gemspec'
+Metrics/ClassLength:
+  Max: 200
 Metrics/MethodLength:
   Max: 25
 Naming/FileName:
