@@ -11,7 +11,7 @@ module Helpers
     ).freeze
 
     def read_fixture(*path)
-      PATH.join(*path).read.chomp
+      PATH.join(*path).read(encoding: 'UTF-8').chomp
     end
   end
 end
